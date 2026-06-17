@@ -517,6 +517,19 @@
       border-color: rgba(0, 60, 60, 0.30);
     }
 
+    .finish-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow);
+      padding: 24px;
+      margin-top: 22px;
+    }
+
+    .finish-card p:last-child {
+      margin-bottom: 0;
+    }
+
     .print-response {
       display: none;
       white-space: pre-wrap;
@@ -599,10 +612,14 @@
 
       .button-row,
       .hub-return-row,
+      .finish-card,
       .modal-overlay,
       #printBtn,
+      #printBtnBottom,
       #saveLaterBtn,
-      #restoreBtn {
+      #saveLaterBtnBottom,
+      #restoreBtn,
+      #restoreBtnBottom {
         display: none !important;
       }
 
@@ -619,11 +636,8 @@
 <body>
   <div class="page">
     <section class="hero" aria-labelledby="page-title">
-      <p class="eyebrow">English 101/117 Toolkit Work Hub</p>
+      <p class="eyebrow">ENG 101 Grade Tool</p>
       <h1 id="page-title">How and Why Your Canvas Grade Changes</h1>
-      <p>
-        Open toolkit workpages here. Save unfinished work in your own Google Doc.
-      </p>
       <p>
         In this course, Canvas uses <strong>weighted assignment groups</strong>. That means not every category affects your total grade equally.
         Use the sliders below to test different score combinations and see how your overall grade changes.
@@ -663,15 +677,15 @@
     <section class="deliverable-card" aria-labelledby="deliverable-title" aria-live="polite">
       <div>
         <p class="eyebrow">Main student task</p>
-        <h2 id="deliverable-title">Deliverable: missing one final essay</h2>
+        <h2 id="deliverable-title">Missing one final essay</h2>
         <p>
-          In this scenario, imagine a student misses <strong>Final Essay 2</strong> and gets a <strong>0</strong> there. Since each final essay is effectively worth <strong>15%</strong> of the total course grade, missing one final creates a large gap right away.
+          Set <strong>Final Essay 2</strong> to <strong>0</strong>. Then move the other sliders until the student still reaches at least a <strong>1.0</strong>.
         </p>
       </div>
       <div class="deliverable-task-box">
         <p id="deliverableText" style="margin-bottom: 12px;"></p>
         <p style="margin-bottom: 0;">
-          <strong>Student task:</strong> Set Final Essay 2 to 0. Then move the other sliders until the student still reaches at least a <strong>1.0</strong>. When you find a combination that works, complete the short response. Finished work should be saved as a PDF and submitted in Canvas.
+          When you find a combination that works, complete the short response. Finished work should be saved as a PDF and submitted in Canvas.
         </p>
       </div>
     </section>
@@ -682,7 +696,7 @@
           <div>
             <h2 id="controls-title">Move the sliders</h2>
             <p style="margin-bottom: 0; color: var(--muted);">
-              Change each category average from 0 to 100 and watch the weighted total update instantly.
+              Test different scores and watch the course grade update.
             </p>
           </div>
 
@@ -698,9 +712,6 @@
 
         <div class="slider-list" id="sliderList"></div>
 
-        <p class="footer-note">
-          Tip: A 10-point change in a heavily weighted category usually affects your total much more than a 10-point change in a small category.
-        </p>
       </section>
 
       <aside class="results-stack" aria-label="Live results panel">
@@ -713,28 +724,9 @@
           </div>
         </div>
 
-        <div class="impact-grid">
-          <div class="impact-card">
-            <div class="impact-label">Biggest impact</div>
-            <div class="impact-value" id="largestImpact">Final Essay 1</div>
-          </div>
-          <div class="impact-card">
-            <div class="impact-label">Smallest impact</div>
-            <div class="impact-value" id="smallestImpact">Check-In</div>
-          </div>
-        </div>
-
         <div class="explanation-box" aria-live="polite">
           <h3>Why did the grade change?</h3>
           <p id="explanationText" style="margin-bottom: 0;"></p>
-        </div>
-
-        <div class="contribution-box">
-          <h3>Weighted contribution by category</h3>
-          <p style="color: var(--muted); margin-bottom: 0;">
-            This shows how many points each category is currently adding to the final course grade.
-          </p>
-          <div class="contribution-list" id="contributionList"></div>
         </div>
 
         <div class="challenge-box">
@@ -747,9 +739,9 @@
         </div>
 
         <div class="challenge-box submission-panel print-only-shell" id="submissionPanel">
-          <h3>Submission box</h3>
+          <h3>Reflection and submission box</h3>
           <p style="margin-bottom: 14px; color: var(--muted);">
-            This is the part that will print or save as a PDF. Finished work should be saved as a PDF and submitted in Canvas. Use Google Docs only for unfinished work you need to return to later.
+            This box prints/saves as the PDF for Canvas. Use Google Docs only for unfinished work.
           </p>
 
           <div class="submission-grid" id="submissionGrid">
@@ -767,7 +759,7 @@
             <p><strong>Course point grade:</strong> <span id="submit-point">0.0</span></p>
           </div>
 
-          <label for="responseBox" style="display: block; font-weight: 700; margin-bottom: 8px;">Short written response</label>
+          <label for="responseBox" style="display: block; font-weight: 700; margin-bottom: 8px;">Reflection</label>
           <textarea id="responseBox" rows="6" placeholder="Which categories mattered most in helping the student still pass with one final essay missing? Explain in 1–2 sentences."></textarea>
           <div class="print-response" id="printResponseBox" aria-hidden="true"></div>
 
@@ -876,8 +868,11 @@
     const resetBtn = document.getElementById('resetBtn');
     const deliverableText = document.getElementById('deliverableText');
     const printBtn = document.getElementById('printBtn');
+    const printBtnBottom = document.getElementById('printBtnBottom');
     const saveLaterBtn = document.getElementById('saveLaterBtn');
+    const saveLaterBtnBottom = document.getElementById('saveLaterBtnBottom');
     const restoreBtn = document.getElementById('restoreBtn');
+    const restoreBtnBottom = document.getElementById('restoreBtnBottom');
     const responseBox = document.getElementById('responseBox');
     const printResponseBox = document.getElementById('printResponseBox');
     const saveModal = document.getElementById('saveModal');
@@ -939,26 +934,26 @@
 
     function buildExplanation(values, total) {
       if (values.final2 === 0 || values.final1 === 0) {
-        return 'A missing final essay has a large effect here because each final essay is effectively worth 15% of the total course grade. On Canvas, the finals are listed together as one 30% group, but because both essays are 100 points, one missing essay creates a major drop by itself.';
+        return 'A missing final matters because each final essay is effectively 15% of the total course grade.';
       }
 
       if (values.checkin >= 95 && values.video >= 90 && (values.final1 < 75 || values.final2 < 75)) {
-        return 'Your smaller categories are strong, but they cannot fully cancel out lower scores in the final essays. That is because the two final essays together make up 30% of the course grade.';
+        return 'Strong smaller categories help, but they may not fully cancel out lower final essay scores.';
       }
 
       if ((values.final1 < 75 || values.final2 < 75) && total < 80) {
-        return 'The grade is being pulled down most by one or both final essays. That makes sense in this course because Final Essays is the largest assignment group on Canvas at 30%, and each final essay is effectively worth 15%.';
+        return 'One or both final essays are pulling the grade down because final essays carry the largest weight.';
       }
 
       if (values.discussions < 75 || values.minor < 75) {
-        return 'A drop in Discussions or Minor Assignments matters a lot in this course because each of those categories is worth 20%. They affect the total much more than Check-In.';
+        return 'Discussions and Minor Assignments matter because each is worth 20%, much more than Check-In.';
       }
 
       if (values.final1 >= 85 && values.final2 >= 85 && total >= 85) {
-        return 'Your total is being helped by strong performance in the highest-value parts of the course. When both final essays are strong, they give your grade a major lift because together they count for 30%.';
+        return 'Strong final essays give the grade a major lift because together they count for 30%.';
       }
 
-      return 'Right now, the biggest shifts are coming from the most heavily weighted categories. In ENG 101, Final Essays, Discussions, and Minor Assignments usually move the total more than Check-In or Video Lecture.';
+      return 'The biggest shifts usually come from Final Essays, Discussions, and Minor Assignments.';
     }
 
     function updatePage() {
@@ -1017,9 +1012,9 @@
       const neededAverageAcrossRemaining = (63 / 85) * 100;
       if (deliverableText) {
         if (values.final2 === 0) {
-          deliverableText.textContent = `To still earn at least a 1.0 with Final Essay 2 missing, a student would need about ${neededAverageAcrossRemaining.toFixed(1)}% across the other 85% of the course. Right now, this setup gives a total grade of ${roundedTotal}%, which converts to a ${pointGrade}.`;
+          deliverableText.textContent = `With Final Essay 2 missing, this setup gives ${roundedTotal}% / ${pointGrade}. A 1.0 requires about ${neededAverageAcrossRemaining.toFixed(1)}% across the rest of the course.`;
         } else {
-          deliverableText.textContent = `If Final Essay 2 were missing and counted as a 0, a student would need about ${neededAverageAcrossRemaining.toFixed(1)}% across the other 85% of the course to still reach a 1.0 overall. Try setting Final Essay 2 to 0 and see how close different score combinations get.`;
+          deliverableText.textContent = `A 1.0 with Final Essay 2 missing requires about ${neededAverageAcrossRemaining.toFixed(1)}% across the rest of the course. Try setting Final Essay 2 to 0.`;
         }
       }
     }
@@ -1169,8 +1164,11 @@
 
 
     if (printBtn) printBtn.addEventListener('click', printFinishedWork);
+    if (printBtnBottom) printBtnBottom.addEventListener('click', printFinishedWork);
     if (saveLaterBtn) saveLaterBtn.addEventListener('click', handleSaveLater);
+    if (saveLaterBtnBottom) saveLaterBtnBottom.addEventListener('click', handleSaveLater);
     if (restoreBtn) restoreBtn.addEventListener('click', restoreSavedWork);
+    if (restoreBtnBottom) restoreBtnBottom.addEventListener('click', restoreSavedWork);
     if (stayBtn) stayBtn.addEventListener('click', closeSaveModal);
     if (saveModal) {
       saveModal.addEventListener('click', (event) => {
